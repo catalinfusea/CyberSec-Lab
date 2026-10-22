@@ -1,5 +1,9 @@
 # Lab SOC: Vagrant + VMware Workstation
 
+![CyberSec-Lab topology](docs/cybersec-lab-topology.png)
+
+Pașii manuali (VMware, pfSense, host): [docs/MANUAL-SETUP.md](docs/MANUAL-SETUP.md)
+
 Faza 1: dc01 (AD + BadBlood), wazuh01 (Wazuh AIO), ws01/ws02 (Win11, join, Sysmon, agent Wazuh),
 lin01 (auditd, agent Wazuh), admin01 (Kali, admin + atac). Toate pe VMnet3, în spatele pfSense (192.168.0.254).
 Faza 2 (decis 2026-10-21: nu acum): elastic01, doar rețea, fără provisioning.
