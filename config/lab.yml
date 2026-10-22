@@ -1,0 +1,106 @@
+# Configuratie centrala lab. Toate versiunile sunt fixate (pin).
+# Verificat la 2026-10-04; vezi README pentru surse.
+
+network:
+  vnet: "VMnet3"            # host-only, fara DHCP VMware. NU VMnet2 (Bridge-WiFi).
+  prefix: 24
+  gateway: "192.168.0.254"  # pfSense LAN (em1)
+  pfsense_dns: "192.168.0.254"
+  dc_ip: "192.168.0.10"
+
+domain:
+  fqdn: "lab.internal"
+  netbios: "LAB"
+
+# Fus orar pentru VM-urile Linux provizionate (deocamdata doar admin01).
+# UTC = timestamps aliniate in Wazuh; schimba in "Europe/Bucharest" daca preferi ora locala.
+timezone: "Etc/UTC"
+# Echivalentul pentru VM-urile Windows (Id din Get-TimeZone -ListAvailable). Provisioner "tz".
+windows_timezone: "UTC"
+
+# Unde sunt clonate VM-urile (linked clones). Cale relativa = fata de folderul cu Vagrantfile
+# (E:\CyberSec-Lab\VMs). null = in .vagrant/. Alternativ: VAGRANT_VMWARE_CLONE_DIRECTORY.
+vmware_clone_directory: "VMs"
+
+boxes:
+  winserver2022:
+    name: "gusztavvargadr/windows-server-2022-standard"
+    version: "2607.0.0"
+  win11:
+    name: "gusztavvargadr/windows-11-25h2-enterprise"
+    version: "2607.1.0"
+  ubuntu2404:
+    name: "gusztavvargadr/ubuntu-server-2404-lts"
+    version: "2607.1.0"
+  kali:
+    name: "kalilinux/rolling"   # provider vmware_desktop, amd64
+    version: "2026.2.0"         # verificat cu `vagrant box list` la 2026-10-19
+
+wazuh:
+  series: "4.14"            # https://packages.wazuh.com/<series>/wazuh-install.sh
+  agent_version: "4.14.8-1" # agent <= manager
+  manager_ip: "192.168.0.20"
+
+badblood:
+  commit: "b3c632514557b2b910db9d936fe39e201109c719"   # 2023-06-07
+  zip_sha256: "57937305979913640a7d6f79389d3e436bc7bc84bb190c72cb261a4813c22f7e"
+  users: 1000
+  groups: 500
+  computers: 100
+  skip_laps: false
+
+sysmon:
+  # sysmon-modular, release configs-082cba578667, profil "balanced" pt Sysmon 15.21
+  config_url: "https://github.com/olafhartong/sysmon-modular/releases/download/configs-082cba578667/sysmonconfig-15.21.xml"
+  config_sha256: "f115aac5770dae468e5cfb48c58a8b6e37588208a31f1b746812c534577a244b"
+
+auditd:
+  # Neo23x0/auditd @ commit 6111069 (2026-05-04)
+  rules_url: "https://raw.githubusercontent.com/Neo23x0/auditd/6111069472c26c4120002933b67cef9855dfbad5/audit.rules"
+  rules_sha256: "922b43e7b7c4ce386749a0e63c3a228a13854277de2ef092eddb536a8fa4142e"
+
+# Ordinea conteaza: `vagrant up` porneste VM-urile secvential, in aceasta ordine.
+machines:
+  - name: wazuh01
+    role: wazuh
+    box: ubuntu2404
+    cpus: 4
+    memory: 8192
+    ip: "192.168.0.20"
+  - name: dc01
+    role: dc
+    box: winserver2022
+    cpus: 2
+    memory: 4096
+    ip: "192.168.0.10"
+  - name: ws01
+    role: ws
+    box: win11
+    cpus: 2
+    memory: 4096
+    ip: "192.168.0.31"
+  - name: ws02
+    role: ws
+    box: win11
+    cpus: 2
+    memory: 4096
+    ip: "192.168.0.32"
+  - name: lin01
+    role: linux
+    box: ubuntu2404
+    cpus: 1
+    memory: 2048
+    ip: "192.168.0.41"
+  - name: admin01            # VM de admin in lab (GUI pfSense/Wazuh) + atac; Kali
+    role: admin
+    box: kali
+    cpus: 2
+    memory: 4096
+    ip: "192.168.0.50"
+  - name: elastic01          # faza 2: doar retea, fara provisioning
+    role: elastic
+    box: ubuntu2404
+    cpus: 4
+    memory: 12288
+    ip: "192.168.0.21"
+    autostart: false

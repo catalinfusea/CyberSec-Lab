@@ -1,0 +1,16 @@
+# Stare Vagrant si VM-uri (mari, locale)
+.vagrant/
+VMs/
+VagrantBoxes/
+ISO/
+# Loguri si backup-uri locale (contin cai, configuratii si hash-uri de pe host)
+logs/
+*.log
+reg-backup/
+pfsense-backup/
+*.bak-*
+*.zip
+# Secrete
+.env
+Passwords.txt
+*.sec
