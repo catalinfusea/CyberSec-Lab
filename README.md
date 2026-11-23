@@ -21,6 +21,9 @@ and analyse security telemetry with Wazuh, Sysmon, auditd and Suricata.
 
 > The operational documentation below is in Romanian.
 
+License: [MIT](LICENSE). Third-party tools (BadBlood, sysmon-modular, Neo23x0/auditd rules, Wazuh) are downloaded at
+provisioning time from their own sources and keep their own licenses; they are not included in this repository.
+
 ![CyberSec-Lab topology](docs/cybersec-lab-topology.png)
 
 ---
