@@ -1,6 +1,31 @@
-# Lab SOC: Vagrant + VMware Workstation
+# CyberSec-Lab: SOC home lab as code (Vagrant + VMware Workstation)
+
+An isolated Active Directory lab behind a pfSense firewall, built and checked from code, used to generate
+and analyse security telemetry with Wazuh, Sysmon, auditd and Suricata.
+
+**What it covers**
+- **Infrastructure as code:** Vagrant (`vmware_desktop`) with PowerShell and bash provisioners, pinned box versions,
+  and an orchestrator (`lab-build.ps1`) that builds the machines in order, checks each one and stops at the first
+  failure. `-CheckOnly` validates the whole lab without changing anything.
+- **Active Directory:** a Windows Server 2022 domain controller (`lab.internal`) populated with BadBlood
+  (about 1,000 users, 500+ groups), two domain-joined Windows 11 workstations and an Ubuntu server.
+- **Telemetry:** Sysmon (sysmon-modular config) and advanced audit policy on Windows, auditd on Linux, and a Wazuh 4.14
+  manager with agents on every endpoint. Suricata IDS runs on the pfSense LAN interface.
+- **Isolation:** the host has no interface on the lab network. The pfSense and Wazuh web interfaces can only be
+  reached through an SSH tunnel via a Kali admin VM, and pfSense rules block lab traffic to private ranges.
+- **Engineering practice:** static validation (shellcheck, PowerShell and YAML syntax, Ruby tests for the Vagrantfile),
+  a troubleshooting log of real problems and fixes, documented known risks, and an explicit tested/untested status
+  for each orchestrator path.
+
+**Status:** phase 1 works end to end (validated 2026-10-21). Phase 2 (Elastic Security) is planned.
+
+> The operational documentation below is in Romanian.
 
 ![CyberSec-Lab topology](docs/cybersec-lab-topology.png)
+
+---
+
+# Lab SOC: Vagrant + VMware Workstation
 
 Pașii manuali (VMware, pfSense, host): [docs/MANUAL-SETUP.md](docs/MANUAL-SETUP.md)
 
